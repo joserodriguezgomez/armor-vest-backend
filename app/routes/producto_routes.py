@@ -11,7 +11,7 @@ productos_collection = db.productos
 
 @router.get("/")
 async def principal():
-    return "productos"
+    return "hola mundo"
 
 
 
