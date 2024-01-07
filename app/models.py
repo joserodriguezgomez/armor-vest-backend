@@ -12,20 +12,28 @@ class Producto(BaseModel):
 
 
 class Idic(BaseModel):
-    id_poliza:int
+    id_poliza:Optional[int] = None
     lote:str
     serie:str
     talla:str
     idic:str
     poliza_nombre:str
     fecha_poliza:datetime
+    fecha_poliza_vencimiento:datetime
     
+
+class NoIdic(BaseModel):
+    id_poliza:int
+    lote:str
+    serie:str
+    talla:str
+
 
 class Chalecos(BaseModel):
     id_chaleco:int
     id_idic:int
     modelo:str
-    stock:Optional[bool]
+    status:str
     vencimiento_funda:datetime
     vencimiento_panel:datetime
     

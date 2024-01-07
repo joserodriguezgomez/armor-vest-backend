@@ -13,8 +13,19 @@ idic_collection = db.idic
 
 @router.post("/idic/", response_model=Idic)
 async def crear_idic(idic: Idic):
+    # Encuentra el último ID de póliza
+    ultimo_idic = idic_collection.find_one(sort=[("id_poliza", -1)])
+    ultimo_id_poliza = ultimo_idic['id_poliza'] if ultimo_idic else 0
+
+    # Incrementa el ID de póliza
+    nuevo_id_poliza = ultimo_id_poliza + 1
+    # Actualiza el ID en el objeto Idic
+    idic.id_poliza = nuevo_id_poliza
+
+    # Inserta el nuevo documento con el ID incrementado
     resultado = idic_collection.insert_one(idic.dict())
     nuevo_elemento = idic_collection.find_one({"_id": resultado.inserted_id})
+
     return Idic(**nuevo_elemento)
 
 
@@ -49,7 +60,7 @@ async def actualizar_idic(idic_id: str, idic_actualizado: Idic):
 
 
 @router.delete("/idic/{idic_id}", response_model=Idic)
-async def eliminar_venta(idic_id: str):
+async def eliminar_idic(idic_id: str):
     resultado = idic_collection.find_one_and_delete({"_id": ObjectId(idic_id)})
     if resultado:
         return Idic(**resultado)
