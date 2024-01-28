@@ -3,16 +3,8 @@ from typing import Optional
 from datetime import datetime
 
 
-# Define un modelo Pydantic para tus datos
-class Producto(BaseModel):
-    id: Optional[str]
-    nombre: str
-    descripcion: str
-    precio: float
-
-
 class Idic(BaseModel):
-    id_poliza:Optional[int] = None
+    id_idic:Optional[int] = None
     lote:str
     serie:str
     talla:str
@@ -23,7 +15,7 @@ class Idic(BaseModel):
     
 
 class NoIdic(BaseModel):
-    id_poliza:int
+    id_idic:int
     lote:str
     serie:str
     talla:str
@@ -43,30 +35,33 @@ class Ventas(BaseModel):
     id_producto:int
     factura:str
     gd:str
+    fecha_venta:datetime
     id_cliente:int
     id_vendedor:int
     comentarios:str
-
+    
 
 class Muestras(BaseModel):
     id_muestra:int
     id_producto:int
     id_cliente:int
     id_vendedor:int
+    fecha_muestra:int
 
-    
     
 class Clientes(BaseModel):
     id_cliente:int
     nombre:str
+    fecha_creacion:datetime
     direccion:str
     correo:str
     telefono:str
     comentarios:str
-    
+   
     
 class Usuarios(BaseModel):
     user:str
+    fecha_creacion:datetime
     password:str
     rol:str
     
