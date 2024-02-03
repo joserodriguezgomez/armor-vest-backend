@@ -13,8 +13,19 @@ devl_collection = db.devoluciones
 
 @router.post("/devoluciones/", response_model=Devoluciones)
 async def crear_devolucion(devolucion: Devoluciones):
+    # Encuentra el último ID de póliza
+    last_id = devl_collection.find_one(sort=[("id_devolucion", -1)])
+    last_id = last_id['id_devolucion'] if last_id else 0
+
+    # Incrementa el ID de póliza
+    new_id = last_id + 1
+    # Actualiza el ID en el objeto Idic
+    devolucion.id_devolucion = new_id
+
+    # Inserta el nuevo documento con el ID incrementado
     resultado = devl_collection.insert_one(devolucion.dict())
     nuevo_elemento = devl_collection.find_one({"_id": resultado.inserted_id})
+
     return Devoluciones(**nuevo_elemento)
 
 

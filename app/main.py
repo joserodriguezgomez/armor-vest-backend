@@ -9,12 +9,13 @@ env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 
 
-
-from .routes import producto_routes
 from .routes import ventas
 from .routes import Idic
 from .routes import devoluciones
 from .routes import chalecos
+from .routes import clientes
+from .routes import usuarios
+
 
 
 
@@ -39,9 +40,9 @@ app.add_middleware(
 
 
 
-app.include_router(producto_routes.router, prefix= "/api")
 app.include_router(ventas.router, prefix= "/api")
 app.include_router(Idic.router, prefix= "/api")
 app.include_router(devoluciones.router, prefix= "/api")
 app.include_router(chalecos.router, prefix= "/api")
-
+app.include_router(clientes.router, prefix= "/api")
+app.include_router(usuarios.router, prefix= "/api")

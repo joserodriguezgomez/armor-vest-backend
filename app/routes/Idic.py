@@ -14,13 +14,13 @@ idic_collection = db.idic
 @router.post("/idic/", response_model=Idic)
 async def crear_idic(idic: Idic):
     # Encuentra el último ID de póliza
-    ultimo_idic = idic_collection.find_one(sort=[("id_poliza", -1)])
-    ultimo_id_poliza = ultimo_idic['id_poliza'] if ultimo_idic else 0
+    ultimo_idic = idic_collection.find_one(sort=[("id_idic", -1)])
+    ultimo_id_poliza = ultimo_idic['id_idic'] if ultimo_idic else 0
 
     # Incrementa el ID de póliza
     nuevo_id_poliza = ultimo_id_poliza + 1
     # Actualiza el ID en el objeto Idic
-    idic.id_poliza = nuevo_id_poliza
+    idic.id_idic = nuevo_id_poliza
 
     # Inserta el nuevo documento con el ID incrementado
     resultado = idic_collection.insert_one(idic.dict())

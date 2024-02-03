@@ -13,8 +13,19 @@ idic_collection = db.idic
 
 @router.post("/chalecos/", response_model=Chalecos)
 async def crear_chaleco(chaleco: Chalecos):
+    # Encuentra el último ID de póliza
+    last_id = chalecos_collection.find_one(sort=[("id_chaleco", -1)])
+    last_id = last_id['id_chaleco'] if last_id else 0
+
+    # Incrementa el ID de póliza
+    new_id = last_id + 1
+    # Actualiza el ID en el objeto Idic
+    chaleco.id_chaleco = new_id
+
+    # Inserta el nuevo documento con el ID incrementado
     resultado = chalecos_collection.insert_one(chaleco.dict())
     nuevo_elemento = chalecos_collection.find_one({"_id": resultado.inserted_id})
+
     return Chalecos(**nuevo_elemento)
 
 
