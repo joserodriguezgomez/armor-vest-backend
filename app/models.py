@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import date
 
 
 class Idic(BaseModel):
@@ -10,8 +10,8 @@ class Idic(BaseModel):
     talla:str
     idic:str
     poliza_nombre:str
-    fecha_poliza:datetime
-    fecha_poliza_vencimiento:datetime
+    fecha_poliza:date
+    fecha_poliza_vencimiento:date
     
 
 class NoIdic(BaseModel):
@@ -26,8 +26,8 @@ class Chalecos(BaseModel):
     id_idic:int
     modelo:str
     status:str
-    vencimiento_funda:datetime
-    vencimiento_panel:datetime
+    vencimiento_funda:date
+    vencimiento_panel:date
     
     
 class Ventas(BaseModel):
@@ -35,7 +35,7 @@ class Ventas(BaseModel):
     id_producto:int
     factura:str
     gd:str
-    fecha_venta:datetime
+    fecha_venta:date
     id_cliente:int
     id_vendedor:int
     comentarios:str
@@ -53,7 +53,7 @@ class Muestras(BaseModel):
 class Clientes(BaseModel):
     id_cliente:int
     nombre:str
-    fecha_creacion:datetime
+    fecha_creacion:date
     direccion:str
     correo:str
     telefono:str
@@ -63,7 +63,7 @@ class Clientes(BaseModel):
 class Usuarios(BaseModel):
     id_user:int
     user:str
-    fecha_creacion:datetime
+    fecha_creacion:date
     password:str
     rol:str
     
@@ -74,7 +74,7 @@ class Devoluciones(BaseModel):
     id_devolucion:int
     id_venta:int
     id_chaleco:int
-    fecha_devolucion:datetime
+    fecha_devolucion:date
     motivo:str
     estado:str
 
