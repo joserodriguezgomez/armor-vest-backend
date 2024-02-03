@@ -39,6 +39,7 @@ class Ventas(BaseModel):
     id_cliente:int
     id_vendedor:int
     comentarios:str
+    precio:float
     
 
 class Muestras(BaseModel):
@@ -60,11 +61,14 @@ class Clientes(BaseModel):
    
     
 class Usuarios(BaseModel):
+    id_user:int
     user:str
     fecha_creacion:datetime
     password:str
     rol:str
     
+
+
 
 class Devoluciones(BaseModel):
     id_devolucion:int

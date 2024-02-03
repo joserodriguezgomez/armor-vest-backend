@@ -14,13 +14,13 @@ usuario_collection = db.usuarios
 @router.post("/usuarios/", response_model=Usuarios)
 async def crear_cliente(usuario: Usuarios):
     # Encuentra el último ID de póliza
-    last_id = usuario_collection.find_one(sort=[("id_usuario", -1)])
-    last_id = last_id['id_usuario'] if last_id else 0
+    last_id = usuario_collection.find_one(sort=[("id_user", -1)])
+    last_id = last_id['id_user'] if last_id else 0
 
     # Incrementa el ID de póliza
     new_id = last_id + 1
     # Actualiza el ID en el objeto Idic
-    usuario.id_usuario = new_id
+    usuario.id_user = new_id
 
     # Inserta el nuevo documento con el ID incrementado
     resultado = usuario_collection.insert_one(usuario.dict())
