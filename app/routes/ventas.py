@@ -45,24 +45,39 @@ async def crear_venta(venta: Ventas):
     return Ventas(**nuevo_elemento)
 
 
-# Obtener todas las ventas
+
 @router.get("/ventas/")
 async def leer_todas_las_ventas():
     
     chalecos_data = convert_objectid_to_string(list(chalecos_collection.find()))
     idic_data = convert_objectid_to_string(list(idic_collection.find()))
     ventas_data = convert_objectid_to_string(list(ventas_collection.find()))
+
+    # Verificar si alguna colección está vacía
+    if not ventas_data or not chalecos_data or not idic_data:
+        # Puedes decidir retornar una lista vacía o lanzar una excepción
+        return []  # o raise HTTPException(status_code=404, detail="No se encontraron datos.")
         
     # Convertir a DataFrames de Pandas
     df_ventas = pd.DataFrame(ventas_data)
-    df_chalecos = pd.DataFrame(chalecos_data).drop(columns=['_id'])  # Excluir columna '_id'
-    df_idic = pd.DataFrame(idic_data).drop(columns=['_id'])         # Excluir columna '_id'
+    df_chalecos = pd.DataFrame(chalecos_data)
+    df_idic = pd.DataFrame(idic_data)
+
+    # Verificar si los DataFrames están vacíos antes de proceder
+    if df_ventas.empty or df_chalecos.empty or df_idic.empty:
+        # Manejar el caso de DataFrames vacíos
+        return []  # O cualquier otro manejo adecuado
+
+    df_chalecos = df_chalecos.drop(columns=['_id'])  # Excluir columna '_id'
+    df_idic = df_idic.drop(columns=['_id'])         # Excluir columna '_id'
+
     df_combinado = pd.merge(df_ventas, df_chalecos, left_on="id_producto", right_on="id_chaleco")
     df_combinado = pd.merge(df_combinado, df_idic, left_on="id_idic", right_on="id_idic")
     
     result = df_combinado.to_dict(orient='records')
 
     return result
+
 
 
 
