@@ -30,11 +30,12 @@ async def crear_cliente(usuario: UsuariosIn):
 
 
 
-@router.get("/usuario/", response_model=List[Usuarios])
+@router.get("/usuarios/", response_model=List[Usuarios])
 async def leer_usuarios():
     result = list(usuario_collection.find())
-    return [Usuarios(**c) for c in result]
-
+    # Convierte _id de ObjectId a str para cada documento
+    result_convertido = [{**c, '_id': str(c['_id'])} if '_id' in c else c for c in result]
+    return [Usuarios(**c) for c in result_convertido]
 
 
 @router.get("/usuario/{usuario_id}", response_model=Usuarios)
