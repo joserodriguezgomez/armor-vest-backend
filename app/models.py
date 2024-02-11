@@ -16,7 +16,7 @@ class PyObjectId(ObjectId):
 
 
 class Idic(BaseModel):
-    # id: Optional[str] = Field(None, alias='_id')
+    id: Optional[str] = Field(None, alias='_id')
     id_idic:Optional[int] = None
     lote:str
     serie:str
@@ -36,7 +36,7 @@ class IdicIn(BaseModel):
     fecha_poliza_vencimiento:datetime    
 
 class NoIdic(BaseModel):
-    # id: Optional[str] = Field(None, alias='_id')
+    id: Optional[str] = Field(None, alias='_id')
     id_idic:int
     lote:str
     serie:str
@@ -44,7 +44,7 @@ class NoIdic(BaseModel):
 
 
 class Chalecos(BaseModel):
-    # id: Optional[str] = Field(None, alias='_id')
+    id: Optional[str] = Field(None, alias='_id')
     id_chaleco:int
     id_idic:int
     modelo:str
@@ -61,7 +61,7 @@ class ChalecosIn(BaseModel):
     
     
 class Ventas(BaseModel):
-    # id: Optional[str] = Field(None, alias='_id')
+    id: Optional[str] = Field(None, alias='_id')
     id_venta:int
     id_producto:int
     factura:str
@@ -86,7 +86,7 @@ class VentasIn(BaseModel):
     
 
 class Muestras(BaseModel):
-    # id: Optional[str] = Field(None, alias='_id')
+    id: Optional[str] = Field(None, alias='_id')
     id_muestra:int
     id_producto:int
     id_cliente:int
@@ -122,7 +122,7 @@ class ClientesIn(BaseModel):
    
     
 class Usuarios(BaseModel):
-    # id: Optional[str] = Field(None, alias='_id')
+    id: Optional[str] = Field(None, alias='_id')
     id_user:int
     user:str
     fecha_creacion:datetime
@@ -138,7 +138,7 @@ class UsuariosIn(BaseModel):
 
 
 class Devoluciones(BaseModel):
-    # id: Optional[str] = Field(None, alias='_id')
+    id: Optional[str] = Field(None, alias='_id')
     id_devolucion:int
     id_venta:int
     id_chaleco:int
