@@ -102,6 +102,7 @@ class MuestrasIn(BaseModel):
     fecha_muestra:int
     
 class Clientes(BaseModel):
+    id: Optional[str] = Field(None, alias='_id')
     id_cliente:int
     nombre:str
     fecha_creacion:datetime
