@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from ..models import Usuarios
+from ..models import Usuarios, UsuariosIn
 from ..database import db
 from typing import List
 from bson import ObjectId
@@ -11,8 +11,8 @@ usuario_collection = db.usuarios
 
 
 
-@router.post("/usuarios/", response_model=Usuarios)
-async def crear_cliente(usuario: Usuarios):
+@router.post("/usuarios/", response_model=UsuariosIn)
+async def crear_cliente(usuario: UsuariosIn):
     # Encuentra el último ID de póliza
     last_id = usuario_collection.find_one(sort=[("id_user", -1)])
     last_id = last_id['id_user'] if last_id else 0
@@ -26,7 +26,7 @@ async def crear_cliente(usuario: Usuarios):
     resultado = usuario_collection.insert_one(usuario.dict())
     nuevo_elemento = usuario_collection.find_one({"_id": resultado.inserted_id})
 
-    return Usuarios(**nuevo_elemento)
+    return UsuariosIn(**nuevo_elemento)
 
 
 
@@ -46,22 +46,22 @@ async def leer_usuario(usuario_id: str):
 
 
 
-@router.put("/usuario/{usuario_id}", response_model=Usuarios)
-async def actualizar_usuario(usuario_id: str, usuario_actualizado: Usuarios):
+@router.put("/usuario/{usuario_id}", response_model=UsuariosIn)
+async def actualizar_usuario(usuario_id: str, usuario_actualizado: UsuariosIn):
     resultado = usuario_collection.find_one_and_update(
         {"_id": ObjectId(usuario_id)},
         {"$set": usuario_actualizado.dict()},
         return_document=True
     )
     if resultado:
-        return Usuarios(**resultado)
+        return UsuariosIn(**resultado)
     raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
 
 
-@router.delete("/usuario/{usuario_id}", response_model=Usuarios)
+@router.delete("/usuario/{usuario_id}", response_model=UsuariosIn)
 async def eliminar_usuario(usuario_id: str):
     resultado = usuario_collection.find_one_and_delete({"_id": ObjectId(usuario_id)})
     if resultado:
-        return Usuarios(**resultado)
+        return UsuariosIn(**resultado)
     raise HTTPException(status_code=404, detail="Usuario no encontrado")
