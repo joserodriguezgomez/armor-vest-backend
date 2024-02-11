@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
-from ..models import Ventas
+from ..models import Ventas, VentasIn
 from ..database import db
 from typing import List
 from bson import ObjectId
 from fastapi import HTTPException
 import pandas as pd
+import numpy as np
 
 
 # Función para convertir ObjectId a String
@@ -18,10 +19,11 @@ router = APIRouter()
 ventas_collection = db.ventas
 chalecos_collection = db.chalecos
 idic_collection = db.idic
+cliente_collection = db.clientes
 
 
-@router.post("/ventas/", response_model=Ventas)
-async def crear_venta(venta: Ventas):
+@router.post("/ventas/", response_model=VentasIn)
+async def crear_venta(venta: VentasIn):
     # Encuentra el último ID de póliza
     last_id = ventas_collection.find_one(sort=[("id_venta", -1)])
     last_id = last_id['id_venta'] if last_id else 0
@@ -42,7 +44,7 @@ async def crear_venta(venta: Ventas):
         {'$set': {'status': 'vendido'}}
     )
 
-    return Ventas(**nuevo_elemento)
+    return VentasIn(**nuevo_elemento)
 
 
 
@@ -52,7 +54,7 @@ async def leer_todas_las_ventas():
     chalecos_data = convert_objectid_to_string(list(chalecos_collection.find()))
     idic_data = convert_objectid_to_string(list(idic_collection.find()))
     ventas_data = convert_objectid_to_string(list(ventas_collection.find()))
-
+    clientes_data = convert_objectid_to_string(list(cliente_collection.find()))
     # Verificar si alguna colección está vacía
     if not ventas_data or not chalecos_data or not idic_data:
         # Puedes decidir retornar una lista vacía o lanzar una excepción
@@ -62,6 +64,7 @@ async def leer_todas_las_ventas():
     df_ventas = pd.DataFrame(ventas_data)
     df_chalecos = pd.DataFrame(chalecos_data)
     df_idic = pd.DataFrame(idic_data)
+    df_clientes = pd.DataFrame(clientes_data)
 
     # Verificar si los DataFrames están vacíos antes de proceder
     if df_ventas.empty or df_chalecos.empty or df_idic.empty:
@@ -70,12 +73,16 @@ async def leer_todas_las_ventas():
 
     df_chalecos = df_chalecos.drop(columns=['_id'])  # Excluir columna '_id'
     df_idic = df_idic.drop(columns=['_id'])         # Excluir columna '_id'
+    df_clientes = df_clientes.drop(columns=['_id'])   
 
     df_combinado = pd.merge(df_ventas, df_chalecos, left_on="id_producto", right_on="id_chaleco")
     df_combinado = pd.merge(df_combinado, df_idic, left_on="id_idic", right_on="id_idic")
+    df_combinado = pd.merge(df_combinado, df_clientes, left_on="id_cliente", right_on="id_cliente")
     
+    
+    df_combinado.replace([np.inf, -np.inf, np.nan], None, inplace=True)
     result = df_combinado.to_dict(orient='records')
-
+ 
     return result
 
 
@@ -91,24 +98,24 @@ async def leer_venta(venta_id: str):
 
 
 
-@router.put("/ventas/{venta_id}", response_model=Ventas)
-async def actualizar_venta(venta_id: str, venta_actualizada: Ventas):
+@router.put("/ventas/{venta_id}", response_model=VentasIn)
+async def actualizar_venta(venta_id: str, venta_actualizada: VentasIn):
     resultado = ventas_collection.find_one_and_update(
         {"_id": ObjectId(venta_id)},
         {"$set": venta_actualizada.dict()},
         return_document=True
     )
     if resultado:
-        return Ventas(**resultado)
+        return VentasIn(**resultado)
     raise HTTPException(status_code=404, detail="Venta no encontrada")
 
 
 
-@router.delete("/ventas/{venta_id}", response_model=Ventas)
+@router.delete("/ventas/{venta_id}", response_model=VentasIn)
 async def eliminar_venta(venta_id: str):
     resultado = ventas_collection.find_one_and_delete({"_id": ObjectId(venta_id)})
     if resultado:
-        return Ventas(**resultado)
+        return VentasIn(**resultado)
     raise HTTPException(status_code=404, detail="Venta no encontrada")
 
 

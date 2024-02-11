@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from ..models import Chalecos
+from ..models import Chalecos, ChalecosIn
 from ..database import db
 from typing import List
 from bson import ObjectId
@@ -11,8 +11,8 @@ chalecos_collection = db.chalecos
 idic_collection = db.idic
 
 
-@router.post("/chalecos/", response_model=Chalecos)
-async def crear_chaleco(chaleco: Chalecos):
+@router.post("/chalecos/", response_model=ChalecosIn)
+async def crear_chaleco(chaleco: ChalecosIn):
     # Encuentra el último ID de póliza
     last_id = chalecos_collection.find_one(sort=[("id_chaleco", -1)])
     last_id = last_id['id_chaleco'] if last_id else 0
@@ -26,14 +26,22 @@ async def crear_chaleco(chaleco: Chalecos):
     resultado = chalecos_collection.insert_one(chaleco.dict())
     nuevo_elemento = chalecos_collection.find_one({"_id": resultado.inserted_id})
 
-    return Chalecos(**nuevo_elemento)
+    return ChalecosIn(**nuevo_elemento)
 
+
+
+# @router.get("/chalecos/", response_model=List[Chalecos])
+# async def leer_chalecos():
+#     devoluciones = list(chalecos_collection.find())
+#     return [Chalecos(**dev) for dev in devoluciones]
 
 
 @router.get("/chalecos/", response_model=List[Chalecos])
 async def leer_chalecos():
-    devoluciones = list(chalecos_collection.find())
-    return [Chalecos(**dev) for dev in devoluciones]
+    chalecos = list(chalecos_collection.find())
+    # Convierte _id de ObjectId a str para cada documento
+    chalecos_convertidas = [{**dev, '_id': str(dev['_id'])} if '_id' in dev else dev for dev in chalecos]
+    return [Chalecos(**dev) for dev in chalecos_convertidas]
 
 
 
@@ -46,24 +54,24 @@ async def leer_chaleco(chaleco_id: str):
 
 
 
-@router.put("/chalecos/{chaleco_id}", response_model=Chalecos)
-async def actualizar_chaleco(chaleco_id: str, chaleco_actualizado: Chalecos):
+@router.put("/chalecos/{chaleco_id}", response_model=ChalecosIn)
+async def actualizar_chaleco(chaleco_id: str, chaleco_actualizado: ChalecosIn):
     resultado = chalecos_collection.find_one_and_update(
         {"_id": ObjectId(chaleco_id)},
         {"$set": chaleco_actualizado.dict()},
         return_document=True
     )
     if resultado:
-        return Chalecos(**resultado)
+        return ChalecosIn(**resultado)
     raise HTTPException(status_code=404, detail="Chaleco no encontrado")
 
 
 
-@router.delete("/chalecos/{chaleco_id}", response_model=Chalecos)
+@router.delete("/chalecos/{chaleco_id}", response_model=ChalecosIn)
 async def eliminar_chaleco(chaleco_id: str):
     resultado = chalecos_collection.find_one_and_delete({"_id": ObjectId(chaleco_id)})
     if resultado:
-        return Chalecos(**resultado)
+        return ChalecosIn(**resultado)
     raise HTTPException(status_code=404, detail="Chaleco no encontrado")
 
 
