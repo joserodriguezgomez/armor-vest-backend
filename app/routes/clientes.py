@@ -68,7 +68,7 @@ async def actualizar_cliente(cliente_id: str, cliente_actualizado: ClientesIn):
 
 
 
-@router.delete("/clientes/{chaleco_id}", response_model=ClientesIn)
+@router.delete("/clientes/{cliente_id}", response_model=ClientesIn)
 async def eliminar_cliente(cliente_id: str):
     resultado = clientes_collection.find_one_and_delete({"_id": ObjectId(cliente_id)})
     if resultado:
