@@ -11,6 +11,15 @@ chalecos_collection = db.chalecos
 idic_collection = db.idic
 
 
+
+def add_dup_status(x):
+    if x == 0:
+        return "O"
+    else:
+        return "D"+str(x)
+    
+    
+
 @router.post("/chalecos/", response_model=ChalecosIn)
 async def crear_chaleco(chaleco: ChalecosIn):
     # Encuentra el último ID de póliza
@@ -36,12 +45,18 @@ async def crear_chaleco(chaleco: ChalecosIn):
 #     return [Chalecos(**dev) for dev in devoluciones]
 
 
-@router.get("/chalecos/", response_model=List[Chalecos])
+@router.get("/chalecos/")
 async def leer_chalecos():
     chalecos = list(chalecos_collection.find())
     # Convierte _id de ObjectId a str para cada documento
     chalecos_convertidas = [{**dev, '_id': str(dev['_id'])} if '_id' in dev else dev for dev in chalecos]
-    return [Chalecos(**dev) for dev in chalecos_convertidas]
+    df_chalecos = pd.DataFrame(chalecos_convertidas)
+    
+    df_chalecos['dup_status'] = df_chalecos.groupby('id_idic').cumcount()
+    df_chalecos['dup_status'] = df_chalecos["dup_status"].apply(add_dup_status, 1)
+    
+    respuesta_final = df_chalecos.to_dict(orient='records')
+    return respuesta_final
 
 
 
@@ -93,6 +108,7 @@ async def leer_chalecos_con_idic():
     # Seleccionar solo las columnas necesarias
     df_final = df_combinado[['id_chaleco', 'id_idic', 'modelo', 'stock', 'talla', 'vencimiento_funda', 'vencimiento_panel']]
 
+    
     # Convertir a formato JSON/dict para la respuesta
     respuesta_final = df_final.to_dict(orient='records')
     

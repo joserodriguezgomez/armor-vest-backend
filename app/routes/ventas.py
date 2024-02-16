@@ -8,6 +8,15 @@ import pandas as pd
 import numpy as np
 
 
+
+
+def add_dup_status(x):
+    if x == 0:
+        return "O"
+    else:
+        return "D"+str(x)
+    
+    
 # Función para convertir ObjectId a String
 def convert_objectid_to_string(data):
     for document in data:
@@ -81,6 +90,11 @@ async def leer_todas_las_ventas():
     
     
     df_combinado.replace([np.inf, -np.inf, np.nan], None, inplace=True)
+    
+    df_combinado['dup_status'] = df_combinado.groupby('id_idic').cumcount()
+    df_combinado['dup_status'] = df_combinado["dup_status"].apply(add_dup_status, 1)
+    
+    
     result = df_combinado.to_dict(orient='records')
  
     return result
