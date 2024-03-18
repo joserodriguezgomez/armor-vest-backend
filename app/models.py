@@ -31,7 +31,7 @@ class IdicIn(BaseModel):
     lote:str
     serie:str
     idic:str
-    poliza_nombre:str
+    poliza_nombre:int
     fecha_poliza:datetime
     fecha_poliza_vencimiento:datetime    
 

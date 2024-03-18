@@ -15,6 +15,7 @@ from .routes import devoluciones
 from .routes import chalecos
 from .routes import clientes
 from .routes import usuarios
+from .routes import cargas_masivas
 
 
 
@@ -46,3 +47,4 @@ app.include_router(devoluciones.router, prefix= "/api")
 app.include_router(chalecos.router, prefix= "/api")
 app.include_router(clientes.router, prefix= "/api")
 app.include_router(usuarios.router, prefix= "/api")
+app.include_router(cargas_masivas.router, prefix= "/api")

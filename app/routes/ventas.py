@@ -83,11 +83,12 @@ async def leer_todas_las_ventas():
     df_chalecos = df_chalecos.drop(columns=['_id'])  # Excluir columna '_id'
     df_idic = df_idic.drop(columns=['_id'])         # Excluir columna '_id'
     df_clientes = df_clientes.drop(columns=['_id'])   
-
-    df_combinado = pd.merge(df_ventas, df_chalecos, left_on="id_producto", right_on="id_chaleco")
-    df_combinado = pd.merge(df_combinado, df_idic, left_on="id_idic", right_on="id_idic")
-    df_combinado = pd.merge(df_combinado, df_clientes, left_on="id_cliente", right_on="id_cliente")
     
+    df_combinado = pd.merge(df_ventas, df_chalecos, left_on="id_producto", right_on="id_chaleco")
+    
+    df_combinado = pd.merge(df_combinado, df_idic, left_on="id_idic", right_on="id_idic")
+    
+    df_combinado = pd.merge(df_combinado, df_clientes, left_on="id_cliente", right_on="id_cliente")
     
     df_combinado.replace([np.inf, -np.inf, np.nan], None, inplace=True)
     
