@@ -76,3 +76,30 @@ async def upload_excel(file: UploadFile = File(...)):
         return "cargado con éxito"
     else:
         return {"error": "Archivo no soportado"}
+
+
+@router.get("/deletePoliza/{poliza_nombre}")
+async def eliminar_idic(poliza_nombre: int):
+    id_idics = []
+    cursor = idic_collection.find({"poliza_nombre": poliza_nombre})
+    for document in cursor:
+        id_idics.append(document["id_idic"])
+        
+    id_chalecos = []
+    chalecos_cursos = chalecos_collection.find({"id_idic": {"$in": id_idics}})    
+    for document in chalecos_cursos:
+        id_chalecos.append(document["id_chaleco"])
+        
+    id_ventas = []
+    ventas_cursor = ventas_collection.find({"id_producto": {"$in": id_chalecos}})    
+    for document in ventas_cursor:
+        id_ventas.append(document["id_venta"])
+
+
+    idic_collection.delete_many({"id_idic": {"$in": id_idics}})
+    chalecos_collection.delete_many({"id_chaleco": {"$in": id_chalecos}})
+    ventas_collection.delete_many({"id_venta": {"$in": id_idics}})
+
+        
+    return "Documentos eliminados con éxito"
+        
