@@ -9,7 +9,6 @@ import pandas as pd
 from io import BytesIO
 
 
-
 router = APIRouter()
 ventas_collection = db.ventas
 chalecos_collection = db.chalecos
@@ -41,7 +40,7 @@ async def upload_excel(file: UploadFile = File(...)):
         df_clientes = pd.read_excel(BytesIO(contents),sheet_name="cliente")
         df_idic = pd.read_excel(BytesIO(contents),sheet_name="IDIC")
         df_ventas = pd.read_excel(BytesIO(contents),sheet_name="ventas")
-        
+        df_idic["poliza_nombre"] = df_idic["poliza_nombre"].astype(str)
         
         df_idic["id_idic"] = df_idic["id_idic"] + last_id_IDIC["id_idic"]
         df["id_chaleco"] = range(last_id["id_chaleco"] + 1, len(df) + last_id["id_chaleco"] + 1)
@@ -79,7 +78,7 @@ async def upload_excel(file: UploadFile = File(...)):
 
 
 @router.get("/deletePoliza/{poliza_nombre}")
-async def eliminar_idic(poliza_nombre: int):
+async def eliminar_idic(poliza_nombre:str):
     id_idics = []
     cursor = idic_collection.find({"poliza_nombre": poliza_nombre})
     for document in cursor:
