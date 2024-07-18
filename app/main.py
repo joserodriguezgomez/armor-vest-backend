@@ -10,13 +10,8 @@ load_dotenv(dotenv_path=env_path)
 
 
 from .routes import ventas
-from .routes import Idic
-from .routes import devoluciones
-from .routes import chalecos
-from .routes import clientes
-from .routes import usuarios
-from .routes import cargas_masivas
-
+from .routes import products
+from .routes import batch_input
 
 
 
@@ -42,9 +37,5 @@ app.add_middleware(
 
 
 app.include_router(ventas.router, prefix= "/api")
-app.include_router(Idic.router, prefix= "/api")
-app.include_router(devoluciones.router, prefix= "/api")
-app.include_router(chalecos.router, prefix= "/api")
-app.include_router(clientes.router, prefix= "/api")
-app.include_router(usuarios.router, prefix= "/api")
-app.include_router(cargas_masivas.router, prefix= "/api")
+app.include_router(products.router, prefix= "/api")
+app.include_router(batch_input.router, prefix= "/api")

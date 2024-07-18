@@ -25,6 +25,63 @@ class Idic(BaseModel):
     fecha_poliza:datetime
     fecha_poliza_vencimiento:datetime
  
+ 
+class Product(BaseModel):
+    id: Optional[str] = Field(None, alias='_id')
+    idChaleco:Optional[int] = None
+    lote:str
+    serie:str
+    idic:str
+    polizaNombre:str
+    vencimientoPoliza:datetime
+    vencimientoPanel:datetime 
+    modelo:str
+    status:str
+    talla:str
+    precio:float
+    cliente:str
+    vendedor:str
+    factura:str
+    gd:str
+    fechaVenta:datetime
+    comentarios:str
+    createdAt:datetime
+    createdBy:str
+    updatedAt:datetime
+    updatedBy:str
+    vencimiento_funda:datetime
+    precio_funda:float
+    dup:str
+    
+ 
+ 
+class ProductIn(BaseModel):
+    idChaleco:Optional[int] = None
+    lote:str
+    serie:str
+    idic:str
+    polizaNombre:str
+    vencimientoPoliza:datetime
+    vencimientoPanel:datetime 
+    modelo:str
+    status:str
+    talla:str
+    precio:float
+    cliente:str
+    vendedor:str
+    factura:str
+    gd:str
+    fechaVenta:datetime
+    comentarios:str
+    createdAt:datetime
+    createdBy:str
+    updatedAt:datetime
+    updatedBy:str
+    vencimiento_funda:datetime
+    precio_funda:float
+    dup:str
+ 
+ 
 
 class IdicIn(BaseModel):
     id_idic:Optional[int] = None
