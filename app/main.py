@@ -19,6 +19,7 @@ app = FastAPI()
 
 origins = [
     "*",
+    "https://armor-vest-front-ffa4d67fd0e2.herokuapp.com"
     "http://localhost:3000",  # Asume que tu frontend está en localhost:3000
     "http://localhost:8080",  # Otro ejemplo de origen que podría ser tu frontend
     # Agrega cualquier otro origen necesario
