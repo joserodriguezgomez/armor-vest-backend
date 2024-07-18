@@ -18,20 +18,16 @@ from .routes import batch_input
 app = FastAPI()
 
 # Orígenes permitidos
-origins = [
-    "http://localhost:3000",
-    "https://armor-vest-front-ffa4d67fd0e2.herokuapp.com",
-    "http://localhost:8080",
+allowed_origins = [
     "*"
 ]
 
-# Agregar middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Lista de orígenes permitidos
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Permite todos los métodos
-    allow_headers=["*"],  # Permite todos los encabezados
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["X-Requested-With", "Content-Type"],
 )
 
 
