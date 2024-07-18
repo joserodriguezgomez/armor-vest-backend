@@ -17,35 +17,23 @@ from .routes import batch_input
 
 app = FastAPI()
 
-# origins = [
-#     "*"
-#     # "https://armor-vest-front-ffa4d67fd0e2.herokuapp.com",
-#     # "http://localhost:3000",  # Asume que tu frontend está en localhost:3000
-#     # "http://localhost:8080",  # Otro ejemplo de origen que podría ser tu frontend
-#     # # Agrega cualquier otro origen necesario
-# ]
-
-
-
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,  # Lista de orígenes permitidos
-#     allow_credentials=True,
-#     allow_methods=["*"],  # Permite todos los métodos
-#     allow_headers=["*"],  # Permite todos los encabezados
-# )
-
+# Orígenes permitidos
 origins = [
+    "http://localhost:3000",
+    "https://armor-vest-front-ffa4d67fd0e2.herokuapp.com",
+    "http://localhost:8080",
     "*"
 ]
 
+# Agregar middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,  # Lista de orígenes permitidos
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Permite todos los métodos
+    allow_headers=["*"],  # Permite todos los encabezados
 )
+
 
 app.include_router(ventas.router, prefix= "/api")
 app.include_router(products.router, prefix= "/api")
