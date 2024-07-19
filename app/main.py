@@ -35,15 +35,18 @@ app = FastAPI()
 #     allow_headers=["*"],  # Permite todos los encabezados
 # )
 
-
+origins = [
+    "*"# Solo porigins = [
+    "http://localhost:3000",
+    "https://armor-vest-front-ffa4d67fd0e2.herokuapp.com",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://armor-vest-front-ffa4d67fd0e2.herokuapp.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-
 )
 
 app.include_router(ventas.router, prefix= "/api")
