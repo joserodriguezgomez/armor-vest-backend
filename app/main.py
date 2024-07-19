@@ -46,7 +46,7 @@ app.add_middleware(
     allow_origins=["https://armor-vest-front-ffa4d67fd0e2.herokuapp.com"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 app.include_router(ventas.router, prefix= "/api")
