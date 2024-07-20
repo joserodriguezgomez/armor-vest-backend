@@ -12,6 +12,7 @@ load_dotenv(dotenv_path=env_path)
 from .routes import ventas
 from .routes import products
 from .routes import batch_input
+from .auth import auth_handler
 
 
 
@@ -26,6 +27,7 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+app.include_router(auth_handler.router)
 app.include_router(ventas.router, prefix= "/api")
 app.include_router(products.router, prefix= "/api")
 app.include_router(batch_input.router, prefix= "/api")
