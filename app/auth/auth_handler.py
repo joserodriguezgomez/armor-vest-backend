@@ -1,53 +1,37 @@
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi import APIRouter, HTTPException
-from ..database import db
+from datetime import datetime, timedelta
+from typing import Union
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 
-oauth2_scheme = OAuth2PasswordBearer("/token")
-router = APIRouter()
+SECRET_KEY = "your_secret_key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-user_collection = db.users
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+def verify_password(plain_password, hashed_password):
+    # return plain_password == hashed_password
+    return pwd_context.verify(plain_password, hashed_password)
 
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
-def get_user(username):
-    userData = list(user_collection.find({'username':username}))
-    if userData:
-        return userData[0]["hashed_password"]
+def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
-
-def verify_password(plane_pass, heshed_pass):
-    return plane_pass == heshed_pass
-
-
-def authenticate_user(username, password):
-    user = get_user(username)
-    if not user:
-        raise HTTPException(status_code = 401, 
-                            detail= "login error",
-                            headers= {
-                                "WWWW-Authenticate": "Bearer"
-                            }
-                            )
-    if not verify_password(password, user):
-        raise HTTPException(status_code = 401, 
-                            detail= "login error",
-                            headers= {
-                                "WWWW-Authenticate": "Bearer"
-                            }
-                            )
-    return user
-        
-        
-
-
-@router.post("/token")
-def login(form_data:OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(form_data.username, form_data.password)
-    print(user)
-    return {
-        "access_token": "tomatito",
-        "token_type": "bearer"
-    }
-   
-    
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise JWTError("Invalid token")
+        return username
+    except JWTError:
+        raise JWTError("Invalid token")

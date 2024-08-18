@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from ..models import Product, ProductIn
 from ..database import db
 from typing import List
 from bson import ObjectId
 from fastapi import HTTPException
 import pandas as pd
+from ..auth.routes import oauth2_scheme
 
 router = APIRouter()
 products_collection = db.products
@@ -41,7 +42,7 @@ async def update_dup_values():
 
 
 @router.post("/products/", response_model=ProductIn)
-async def create_product(product: ProductIn):
+async def create_product(product: ProductIn, token: str = Depends(oauth2_scheme)):
     last_id = products_collection.find_one(sort=[("idChaleco", -1)])
     last_id = last_id['idChaleco'] if last_id else 0
 
@@ -77,18 +78,25 @@ async def create_product(product: ProductIn):
     return ProductIn(**new_element)
 
 
-@router.get("/products/")
-async def read_product():
-    chalecos = list(products_collection.find())
-    chalecos_convertidas = [{**el, '_id': str(el['_id'])} if '_id' in el else el for el in chalecos]
+@router.get("/products/{lote_name}")
+async def read_product(lote_name: str, token: str = Depends(oauth2_scheme)):
+    if lote_name == "all":
+        # Devuelve todos los chalecos sin filtrar por lote
+        chalecos = list(products_collection.find())
+    else:
+        # Filtra los chalecos por el lote especificado
+        chalecos = list(products_collection.find({"lote": lote_name}))
 
     # Convierte _id de ObjectId a str para cada documento
+    chalecos_convertidas = [{**el, '_id': str(el['_id'])} if '_id' in el else el for el in chalecos]
+
     return chalecos_convertidas
 
 
 
+
 @router.put("/products/{product_id}", response_model=ProductIn)
-async def update_product(product_id: str, updated_product: ProductIn):
+async def update_product(product_id: str, updated_product: ProductIn,token: str = Depends(oauth2_scheme)):
     result = products_collection.find_one_and_update(
         {"_id": ObjectId(product_id)},
         {"$set": updated_product.model_dump()},
@@ -100,11 +108,40 @@ async def update_product(product_id: str, updated_product: ProductIn):
 
 
 @router.delete("/products/{product_id}", response_model=ProductIn)
-async def delete_product(product_id: str):
+async def delete_product(product_id: str, token: str = Depends(oauth2_scheme)):
     result = products_collection.find_one_and_delete({"_id": ObjectId(product_id)})
     if result:
         return ProductIn(**result)
     raise HTTPException(status_code=404, detail="Chaleco no encontrado")
 
 
+@router.get("/lote_summary/")
+async def get_resumen_por_lote():
+    pipeline = [
+        {
+            "$group": {
+                "_id": {
+                    "lote": "$lote",
+                    "vencimientoPoliza": "$vencimientoPoliza"
+                },
+                "vendidos": {"$sum": {"$cond": [{"$eq": ["$status", "vendido"]}, 1, 0]}},
+                "stock": {"$sum": {"$cond": [{"$eq": ["$status", "stock"]}, 1, 0]}}
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "lote": "$_id.lote",
+                "vencimientoPoliza": "$_id.vencimientoPoliza",
+                "vendidos": 1,
+                "stock": 1
+            }
+        }
+    ]
+    
+    resultado = list(products_collection.aggregate(pipeline))
+    if not resultado:
+        raise HTTPException(status_code=404, detail="No se encontraron lotes.")
+    
+    return resultado
 
