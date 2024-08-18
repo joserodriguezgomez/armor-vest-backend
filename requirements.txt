@@ -6,3 +6,5 @@ python-multipart
 openpyxl
 pandas
 numpy
+jose
+passlib
